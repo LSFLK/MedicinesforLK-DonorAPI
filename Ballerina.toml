@@ -1,0 +1,9 @@
+[build-options]
+  observabilityIncluded = true
+
+[package]
+  distribution = "2201.0.4"
+  export = ["donor_api"]
+  name = "donor_api"
+  org = "elixir"
+
