@@ -57,11 +57,11 @@ type Quotation record {
   MedicalItem? medicalItem = ();
 };
 type AidPackage record {
-  int packageID=-1;
-  string? description = ();
-  string? name = ();
-  string status="Draft";
-  AidPackageItem[] aidPackageItems=[];
+  int packageID;
+  string? description;
+  string? name;
+  string status;
+  AidPackageItem[] aidPackageItems;
 };
 type AidPackageItem record {
   int packageItemID=-1;
