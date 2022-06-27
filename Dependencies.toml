@@ -233,12 +233,15 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "sql"
-version = "1.3.1"
+version = "1.4.0"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.object"},
 	{org = "ballerina", name = "time"}
+]
+modules = [
+	{org = "ballerina", packageName = "sql", moduleName = "sql"}
 ]
 
 [[package]]
@@ -302,6 +305,7 @@ name = "donor_api"
 version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "http"},
+	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerinai", name = "observe"},
 	{org = "ballerinax", name = "mysql"}
