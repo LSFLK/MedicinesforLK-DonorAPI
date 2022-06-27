@@ -64,13 +64,13 @@ type AidPackage record {
   AidPackageItem[] aidPackageItems;
 };
 type AidPackageItem record {
-  int packageItemID=-1;
-  int packageID=-1;
+  int packageItemID;
+  int packageID;
   int quotationID;
   int needID;
   int quantity;
-  decimal totalAmount = 0;
-  Quotation? quotation = ();
+  decimal totalAmount;
+  Quotation quotation?;
 };
 type Pledge record {
   int pledgeID=-1;

@@ -6,6 +6,7 @@
   export = ["donor_api"]
   name = "donor_api"
   org = "elixir"
+  version="1.0.0"
 
 [[platform.java11.dependency]]
 groupId = "mysql"

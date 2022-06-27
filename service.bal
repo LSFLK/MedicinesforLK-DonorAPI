@@ -1,6 +1,6 @@
 import ballerina/http;
 import ballerinax/mysql;
-import ballerina/sql;
+
 
 # A service representing a network-accessible API
 # bound to port `9090`.
@@ -43,14 +43,31 @@ service /donor on new http:Listener(9090) {
         aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS FROM AID_PACKAGE  WHERE PACKAGEID=${packageID};`);
         stream<AidPackageItem, error?> resultItemStream = dbClient->query(`SELECT PACKAGEITEMID, PACKAGEID, QUOTATIONID, NEEDID, QUANTITY, TOTALAMOUNT FROM AID_PACKAGE_ITEM WHERE PACKAGEID=${packageID};`);
         if aidPackage is AidPackage {
-            aidPackage.aidPackageItems = [];
+            AidPackageItem[] aidPackageItems=[];
             check from AidPackageItem aidPackageItem in resultItemStream
-                do {
-                    aidPackage.aidPackageItems.push(aidPackageItem);
-                };
+            do {
+                aidPackageItems.push(aidPackageItem);
+            };
+            aidPackage.aidPackageItems=aidPackageItems;
         }
         error? e = dbClient.close();
         return aidPackage.toJson();
     }
+
+    // # A resource for doind an pledge
+    // # + return - An aidPackage
+    // resource function post AidPackage/pledge(Pledge pledge) returns json|error {
+    //     mysql:Client dbClient = check new (dbHost, dbUser, dbPass, db, dbPort);
+    //     sql:ParameterizedQuery query = `INSERT INTO SUPPLIER(NAME, SHORTNAME, EMAIL, PHONENUMBER)
+    //                                         VALUES (${_supplier.name}, ${_supplier.shortName},
+    //                                                 ${_supplier.email}, ${_supplier.phoneNumber});`;
+    //         sql:ExecutionResult result = check dbClient->execute(query);
+    //         if result.lastInsertId is int {
+    //             _supplier.supplierID = <int> result.lastInsertId;
+    //         }
+
+    //         error? e = dbClient.close();
+    //     return aidPackage.toJson();
+    // }
 }
 

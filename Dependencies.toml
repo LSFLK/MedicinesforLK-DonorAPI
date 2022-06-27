@@ -240,9 +240,6 @@ dependencies = [
 	{org = "ballerina", name = "lang.object"},
 	{org = "ballerina", name = "time"}
 ]
-modules = [
-	{org = "ballerina", packageName = "sql", moduleName = "sql"}
-]
 
 [[package]]
 org = "ballerina"
@@ -302,10 +299,9 @@ modules = [
 [[package]]
 org = "elixir"
 name = "donor_api"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "http"},
-	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerinai", name = "observe"},
 	{org = "ballerinax", name = "mysql"}
