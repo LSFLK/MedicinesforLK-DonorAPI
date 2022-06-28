@@ -57,27 +57,27 @@ type Quotation record {
   MedicalItem? medicalItem = ();
 };
 type AidPackage record {
-  int packageID;
-  string? description;
-  string? name;
+  int packageID?;
+  string description;
+  string name;
   string status;
-  AidPackageItem[] aidPackageItems;
+  AidPackageItem[] aidPackageItems?;
 };
 type AidPackageItem record {
-  int packageItemID=-1;
-  int packageID=-1;
+  int packageItemID;
+  int packageID;
   int quotationID;
   int needID;
   int quantity;
-  decimal totalAmount = 0;
-  Quotation? quotation = ();
+  decimal totalAmount;
+  Quotation quotation?;
 };
 type Pledge record {
-  int pledgeID=-1;
-  int packageID;
-  int donorID; 
+  int pledgeID?;
+  int packageID?;
+  int donorID?; 
   decimal amount;
-  string status;
+  string status?;
 };
 
 // Information type
@@ -88,4 +88,12 @@ type MedicalNeedInfo record {
   int quantity;
   Beneficiary? beneficiary = ();
   Quotation[] supplierQuotes = [];
+};
+
+type AidPackageUpdate record {
+  int packageUpdateId;
+  int packageID;
+  string updateComment;
+  time:Utc dateTimeUtc;
+  string dateTime;
 };

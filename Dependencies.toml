@@ -233,7 +233,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "sql"
-version = "1.3.1"
+version = "1.4.0"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -302,7 +302,7 @@ modules = [
 [[package]]
 org = "elixir"
 name = "donor_api"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "sql"},
