@@ -3,7 +3,7 @@ import ballerina/sql;
 import ballerinax/mysql;
 
 listener http:Listener interceptorListener = new http:Listener(9090, config = {
-    interceptors: [responseErrorInterceptor] 
+    //interceptors: [responseErrorInterceptor] //Uncomment and enable when ballerina/http module 2.3.0 is available at choreo with next update
 });
 
 # A service representing a network-accessible API
@@ -131,7 +131,7 @@ service /donor on interceptorListener {
 ResponseErrorInterceptor responseErrorInterceptor = new;
 
 service class ResponseErrorInterceptor {
-    *http:ResponseErrorInterceptor;
+    //*http:ResponseErrorInterceptor; //Uncomment and enable when ballerina/http module 2.3.0 is available at choreo with next update
 
     remote function interceptResponseError(error err)
             returns http:InternalServerError {
