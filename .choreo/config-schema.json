@@ -27,10 +27,6 @@
             "db": {
               "type": "string",
               "description": ""
-            },
-            "servicePort": {
-              "type": "integer",
-              "description": ""
             }
           },
           "additionalProperties": false
