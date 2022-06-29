@@ -2,13 +2,14 @@ import ballerina/http;
 import ballerina/sql;
 import ballerinax/mysql;
 
-listener http:Listener interceptorListener = new http:Listener(servicePort, config = {
-    //interceptors: [responseErrorInterceptor] //Uncomment and enable when ballerina/http module 2.3.0 is available at choreo with next update
-});
+//Uncomment and add listener when ballerina/http module 2.3.0 is available at choreo with next update
+//listener http:Listener interceptorListener = new http:Listener(servicePort, config = {
+//  interceptors: [responseErrorInterceptor] 
+//});
 
 # A service representing a network-accessible API
 # bound to port `9090`.
-service /donor on interceptorListener {
+service /donor on new http:Listener(servicePort) {
 
     # A resource for reading all aidPackages
     # + return - List of aidPackages
