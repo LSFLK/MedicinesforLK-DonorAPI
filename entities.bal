@@ -1,0 +1,99 @@
+import ballerina/time;
+
+// Stakeholders (Main Actors)
+type Supplier record {
+  int supplierID = -1;
+  string name;
+  string shortName;
+  string email;
+  string phoneNumber;
+};
+type Beneficiary record {
+  int beneficiaryID = -1;
+  string name;
+  string shortName;
+  string email;
+  string phoneNumber;
+};
+type Donor record {
+  int donarID = -1;
+  string orgName;
+  string orgLink;
+  string email;
+  string phoneNumber;
+};
+
+// Main Types
+type MedicalItem record {
+  int itemID=-1; 
+  string name; 
+  string shortName; 
+  string email;
+  string phoneNumber;
+};
+type RequirementList record {
+  string name;
+  MedicalNeed[] needs = [];
+};
+type MedicalNeed record {
+  int needID=-1;
+  int itemID;
+  int beneficiaryID; 
+  time:Date period;
+  string urgency;
+  int quantity;
+  Beneficiary? beneficiary = ();
+};
+type Quotation record {
+  int quotationID=-1;
+  int supplierID;
+  int itemID;
+  string brandName;
+  int availableQuantity;
+  time:Date expiryDate; 
+  string regulatoryInfo;
+  decimal unitPrice;
+  Supplier? supplier = ();
+  MedicalItem? medicalItem = ();
+};
+type AidPackage record {
+  int packageID?;
+  string description;
+  string name;
+  string status;
+  AidPackageItem[] aidPackageItems?;
+};
+type AidPackageItem record {
+  int packageItemID;
+  int packageID;
+  int quotationID;
+  int needID;
+  int quantity;
+  decimal totalAmount;
+  Quotation quotation?;
+};
+type Pledge record {
+  int pledgeID?;
+  int packageID?;
+  int donorID?; 
+  decimal amount;
+  string status?;
+};
+
+// Information type
+type MedicalNeedInfo record {
+  int needID=-1;
+  time:Date period;
+  string urgency;
+  int quantity;
+  Beneficiary? beneficiary = ();
+  Quotation[] supplierQuotes = [];
+};
+
+type AidPackageUpdate record {
+  int packageUpdateId;
+  int packageID;
+  string updateComment;
+  time:Utc dateTimeUtc;
+  string dateTime;
+};
