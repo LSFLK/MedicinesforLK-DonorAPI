@@ -9,7 +9,7 @@ import ballerinax/mysql;
 
 # A service representing a network-accessible API
 # bound to port `9090`.
-service /donor on new http:Listener(servicePort) {
+service /donor on new http:Listener(9090) {
 
     # A resource for reading all aidPackages
     # + return - List of aidPackages
