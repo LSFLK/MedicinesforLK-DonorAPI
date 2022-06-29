@@ -2,7 +2,7 @@ import ballerina/http;
 import ballerina/sql;
 import ballerinax/mysql;
 
-listener http:Listener interceptorListener = new http:Listener(9090, config = {
+listener http:Listener interceptorListener = new http:Listener(servicePort, config = {
     //interceptors: [responseErrorInterceptor] //Uncomment and enable when ballerina/http module 2.3.0 is available at choreo with next update
 });
 
