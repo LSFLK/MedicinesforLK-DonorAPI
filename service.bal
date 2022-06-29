@@ -3,7 +3,7 @@ import ballerina/sql;
 import ballerinax/mysql;
 
 //Uncomment and add listener when ballerina/http module 2.3.0 is available at choreo with next update
-//listener http:Listener interceptorListener = new http:Listener(servicePort, config = {
+//listener http:Listener interceptorListener = new http:Listener(9090, config = {
 //  interceptors: [responseErrorInterceptor] 
 //});
 
@@ -75,13 +75,14 @@ service /donor on new http:Listener(9090) {
         return aidPackages;
     }
 
-    # A resource for fetching an aidPackage
+    # A resource for fetching an aidPackage not in Draft status
     # + return - An aidPackage
     resource function get [int donorID]/aidpackage/[int AidPackageID]() returns AidPackage?|error {
+        string status = "Draft";
         AidPackage? aidPackage = ();
         mysql:Client dbClient = check new (dbHost, dbUser, dbPass, db, dbPort);
         aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS FROM AID_PACKAGE  WHERE PACKAGEID=${AidPackageID};`);
-        stream<AidPackageItem, error?> resultItemStream = dbClient->query(`SELECT PACKAGEITEMID, PACKAGEID, QUOTATIONID, NEEDID, QUANTITY, TOTALAMOUNT FROM AID_PACKAGE_ITEM WHERE PACKAGEID=${AidPackageID};`);
+        stream<AidPackageItem, error?> resultItemStream = dbClient->query(`SELECT PACKAGEITEMID, PACKAGEID, QUOTATIONID, NEEDID, QUANTITY, TOTALAMOUNT FROM AID_PACKAGE_ITEM WHERE PACKAGEID=${AidPackageID} WHERE STATUS!=${status};`);
         if aidPackage is AidPackage {
             AidPackageItem[] aidPackageItems = [];
             check from AidPackageItem aidPackageItem in resultItemStream
