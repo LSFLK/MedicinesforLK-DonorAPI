@@ -59,7 +59,7 @@ type Quotation record {
 };
 
 type AidPackage record {
-    int packageID?;
+    int packageID = -1;
     string description;
     string name;
     string status;
