@@ -111,8 +111,10 @@ service /donor on new http:Listener(9090) {
     # + return - list of aidPackageUpdateComments
     resource function get aidpackage/[int AidPackageID]/updatecomments() returns AidPackageUpdate[]|error {
         AidPackageUpdate[] aidPackageUpdates = [];
-        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGAEUPDATEID, 
-                        UPDATECOMMENT, DATETIME FROM AID_PACKAGAE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
+        mysql:Client dbClient = check new (dbHost, dbUser, dbPass, db, dbPort);
+
+        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGEUPDATEID, UPDATECOMMENT, 
+                DATETIME FROM AID_PACKAGAE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
         check from AidPackageUpdate aidPackageUpdate in resultStream
             do {
                 aidPackageUpdates.push(aidPackageUpdate);
