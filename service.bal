@@ -119,7 +119,7 @@ service /donor on new http:Listener(9090) {
         AidPackageUpdate[] aidPackageUpdates = [];
         mysql:Client dbClient = check new (dbHost, dbUser, dbPass, db, dbPort);
 
-        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGAEUPDATEID, UPDATECOMMENT, DATETIME FROM AID_PACKAGAE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
+        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGEUPDATEID, UPDATECOMMENT, DATETIME FROM AID_PACKAGAE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
         check from AidPackageUpdate aidPackageUpdate in resultStream
             do {
                 aidPackageUpdates.push(aidPackageUpdate);
