@@ -72,13 +72,12 @@ service /donor on new http:Listener(9090) {
     # + return - An aidPackage
     resource function get [int donorID]/aidpackage/[int AidPackageID]() returns AidPackage?|error {
         string status = "Draft";
-        AidPackage? aidPackage = ();
-        aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS FROM AID_PACKAGE  
-                                               WHERE PACKAGEID=${AidPackageID};`);
-        stream<AidPackageItem, error?> resultItemStream = dbClient->query(`SELECT PACKAGEITEMID, PACKAGEID, QUOTATIONID, 
-                                               NEEDID, QUANTITY, TOTALAMOUNT FROM AID_PACKAGE_ITEM 
-                                               WHERE PACKAGEID=${AidPackageID} WHERE STATUS!=${status};`);
+        AidPackage aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS FROM AID_PACKAGE  
+                                               WHERE PACKAGEID=${AidPackageID} AND STATUS!=${status};`);
         if aidPackage is AidPackage {
+            stream<AidPackageItem, error?> resultItemStream = dbClient->query(`SELECT PACKAGEITEMID, PACKAGEID, QUOTATIONID, 
+                                               NEEDID, QUANTITY, TOTALAMOUNT FROM AID_PACKAGE_ITEM 
+                                               WHERE PACKAGEID=${AidPackageID};`);
             AidPackageItem[] aidPackageItems = [];
             check from AidPackageItem aidPackageItem in resultItemStream
                 do {
@@ -96,8 +95,8 @@ service /donor on new http:Listener(9090) {
         pledge.donorID = donorID;
         pledge.packageID = AidPackageID;
         pledge.status = "Pledged";
-        sql:ExecutionResult result = check dbClient->execute(`INSERT INTO PLEDGE (PACKAGEID,DONORID,STATUS) 
-                                    VALUES (${pledge.packageID},${pledge.donorID},${pledge.status});`);
+        sql:ExecutionResult result = check dbClient->execute(`INSERT INTO PLEDGE (PACKAGEID,DONORID,AMOUNT,STATUS) 
+                                    VALUES (${pledge.packageID},${pledge.donorID},${pledge.amount},${pledge.status});`);
         var lastInsertedID = result.lastInsertId;
         if lastInsertedID is int {
             pledge.pledgeID = lastInsertedID;
@@ -113,7 +112,7 @@ service /donor on new http:Listener(9090) {
         AidPackageUpdate[] aidPackageUpdates = [];
         mysql:Client dbClient = check new (dbHost, dbUser, dbPass, db, dbPort);
 
-        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGEUPDATEID, UPDATECOMMENT,DATE_FORMAT(DATETIME, '%Y-%m-%d %T') FROM AID_PACKAGAE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
+        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGEUPDATEID, UPDATECOMMENT,DATE_FORMAT(DATETIME, '%Y-%m-%d %T') FROM AID_PACKAGE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
         check from AidPackageUpdate aidPackageUpdate in resultStream
             do {
                 aidPackageUpdates.push(aidPackageUpdate);
