@@ -18,7 +18,7 @@ type Beneficiary record {
 };
 
 type Donor record {
-    int donarID = -1;
+    int donorID = -1;
     string orgName;
     string orgLink;
     string email;
@@ -80,6 +80,7 @@ type Pledge record {
     int pledgeID = -1;
     int packageID;
     int donorID;
+    decimal amount;
     string status;
 };
 
