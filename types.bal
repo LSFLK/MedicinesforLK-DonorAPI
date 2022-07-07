@@ -63,7 +63,9 @@ type AidPackage record {
     string description;
     string name;
     string status;
-    AidPackageItem[]? aidPackageItems = ();
+    decimal goalAmount?;
+    decimal receivedAmount?;
+    AidPackageItem[] aidPackageItems = [];
 };
 
 type AidPackageItem record {
@@ -90,3 +92,9 @@ type AidPackageUpdate record {
     string updateComment;
     string dateTime;
 };
+
+//Return types
+type DonorAidPackage record {|
+    *AidPackage;
+    decimal amount;
+|};
