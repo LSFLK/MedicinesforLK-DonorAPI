@@ -50,7 +50,7 @@ service /donor on new http:Listener(9090) {
 
     # A resource for fetching an aidPackage not in Draft status
     # + return - An aidPackage
-    resource function get [int donorID]/aidpackage/[int AidPackageID]() returns AidPackage?|error {
+    resource function get [int donorID]/aidpackages/[int AidPackageID]() returns AidPackage?|error {
         string status = "Draft";
         AidPackage aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS FROM AID_PACKAGE  
                                                WHERE PACKAGEID=${AidPackageID} AND STATUS!=${status};`);
