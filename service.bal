@@ -60,7 +60,7 @@ service /donor on new http:Listener(9090) {
 
     # A resource for doind an pledge
     # + return - An aidPackage
-    resource function post [int donorID]/aidpackage/[int AidPackageID]/pledge(@http:Payload Pledge pledge) returns Pledge|error {
+    resource function post [int donorID]/aidpackages/[int AidPackageID]/pledge(@http:Payload Pledge pledge) returns Pledge|error {
         pledge.donorID = donorID;
         pledge.packageID = AidPackageID;
         pledge.status = "Pledged";
@@ -75,11 +75,34 @@ service /donor on new http:Listener(9090) {
         return pledge;
     }
 
+    # A resource for fetching an donor pledges for aid package
+    # + return - list of pledges
+    resource function get [int donorID]/aidpackages/[int AidPackageID]/pledges() returns Pledge[]?|error {
+        Pledge[] pledges = [];
+        stream<Pledge, error?> resultStream = dbClient->query(`SELECT PLEDGEID,PACKAGEID,DONORID,AMOUNT,STATUS FROM PLEDGE  
+                                               WHERE PACKAGEID=${AidPackageID} AND DONORID=${donorID};`);
+        check from Pledge pledge in resultStream
+            do {
+                pledges.push(pledge);
+            };
+        check resultStream.close();
+        return pledges;
+    }
+
+    # A resource for doind an pledge
+    # + return - An aidPackage
+    resource function put [int donorID]/aidpackages/[int AidPackageID]/pledges/[int pledgeID](@http:Payload Pledge pledge) returns Pledge|error {
+        pledge.pledgeID = pledgeID;
+        pledge.donorID = donorID;
+        pledge.packageID = AidPackageID;
+        sql:ExecutionResult _ = check dbClient->execute(`UPDATE PLEDGE SET AMOUNT = ${pledge.amount} WHERE PLEDGEID=${pledgeID};`);
+        return check getPledge(pledgeID);
+    }
+
     # A resource for fetching all comments of an aidPackage
     # + return - list of aidPackageUpdateComments
-    resource function get aidpackage/[int AidPackageID]/updatecomments() returns AidPackageUpdate[]|error {
+    resource function get aidpackages/[int AidPackageID]/updatecomments() returns AidPackageUpdate[]|error {
         AidPackageUpdate[] aidPackageUpdates = [];
-        mysql:Client dbClient = check new (dbHost, dbUser, dbPass, db, dbPort);
 
         stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGEUPDATEID, UPDATECOMMENT,DATE_FORMAT(DATETIME, '%Y-%m-%d %T') FROM AID_PACKAGE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
         check from AidPackageUpdate aidPackageUpdate in resultStream
@@ -122,5 +145,10 @@ function constructAidPackageData(AidPackage|DonorAidPackage aidPackage) returns 
     if (recievedAmount is decimal) {
         aidPackage.receivedAmount = recievedAmount;
     }
+}
+
+function getPledge(int pledgeId) returns Pledge|error {
+    Pledge pledge = check dbClient->queryRow(`SELECT PLEDGEID, PACKAGEID, DONORID, AMOUNT, STATUS                                                                      FROM PLEDGE WHERE PLEDGEID=${pledgeId};`);
+    return pledge;
 }
 
