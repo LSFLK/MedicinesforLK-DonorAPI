@@ -135,6 +135,7 @@ function constructAidPackageData(AidPackage|DonorAidPackage aidPackage) returns 
                                                                     FROM SUPPLIER 
                                                                     WHERE SUPPLIERID=${quotation.supplierID}`);
             aidPackageItem.quotation = quotation;
+            aidPackageItem.totalAmount = <decimal>aidPackageItem.quantity * quotation.unitPrice;
             aidPackage.aidPackageItems.push(aidPackageItem);
             totalAmount = totalAmount + aidPackageItem.totalAmount;
         };
