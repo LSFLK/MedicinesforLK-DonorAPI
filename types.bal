@@ -17,13 +17,6 @@ type Beneficiary record {
     string phoneNumber;
 };
 
-type Donor record {
-    int donorID = -1;
-    string orgName;
-    string orgLink;
-    string email;
-    string phoneNumber;
-};
 
 // Main Types
 type MedicalItem record {
@@ -81,7 +74,7 @@ type AidPackageItem record {
 type Pledge record {
     int pledgeID = -1;
     int packageID;
-    int donorID;
+    string donorID;
     decimal amount;
     string status;
 };
