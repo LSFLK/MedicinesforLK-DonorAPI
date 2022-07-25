@@ -1,0 +1,23 @@
+version: "3.5"
+
+services:
+  medicinesforlk-donorapi:
+    build:
+      context: ./
+    restart: unless-stopped
+    container_name: medicinesforlk-donorapi
+    image: medicinesforlk-donorapi
+    ports:
+      - "9091:9090"
+    volumes: 
+      - "./:/home"
+      - "./target:/app/target"
+      - "./Dependencies.toml:/app/Dependencies.toml"
+    networks:
+      medicinesforlk-network:
+        ipv4_address: 172.16.238.12
+
+networks:
+  medicinesforlk-network:
+    name: medicinesforlk-network
+    external: true
