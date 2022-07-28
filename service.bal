@@ -115,19 +115,24 @@ service /donor on new http:Listener(9090) {
 
     # A resource for deleting an aidPackage
     resource function delete [string donorID]/aidpackages/[int AidPackageID]() returns error? {
-        AidPackageItem[] aidPackageItems = [];
-        stream<AidPackageItem, error?> resultStream = dbClient->query(`SELECT PACKAGEID,QUOTATIONID,NEEDID,QUANTITY,TOTALAMOUNT FROM AID_PACKAGE_ITEM  
+        transaction {
+            AidPackageItem[] aidPackageItems = [];
+            stream<AidPackageItem, error?> resultStream = dbClient->query(`SELECT PACKAGEID,QUOTATIONID,NEEDID,QUANTITY,TOTALAMOUNT FROM AID_PACKAGE_ITEM  
                                                WHERE PACKAGEID=${AidPackageID};`);
-        check from AidPackageItem aidPackageItem in resultStream
-            do {
-                aidPackageItems.push(aidPackageItem);
-            };
-        check resultStream.close();
-        foreach AidPackageItem aidPackageItem in aidPackageItems {
-            sql:ExecutionResult _ = check dbClient->execute(`UPDATE MEDICAL_NEED SET NEEDEDQUANTITY = NEEDEDQUANTITY + ${aidPackageItem.quantity} WHERE NEEDID=${aidPackageItem.needID};`);
+            check from AidPackageItem aidPackageItem in resultStream
+                do {
+                    aidPackageItems.push(aidPackageItem);
+                };
+            check resultStream.close();
+            foreach AidPackageItem aidPackageItem in aidPackageItems {
+                sql:ExecutionResult _ = check dbClient->execute(`UPDATE MEDICAL_NEED SET NEEDEDQUANTITY = NEEDEDQUANTITY + ${aidPackageItem.quantity} WHERE NEEDID=${aidPackageItem.needID};`);
+            }
+            sql:ExecutionResult _ = check dbClient->execute(`DELETE FROM AID_PACKAGE_ITEM WHERE PACKAGEID=${AidPackageID}`);
+            sql:ExecutionResult _ = check dbClient->execute(`DELETE FROM AID_PACKAGE WHERE PACKAGEID=${AidPackageID}`);
+
+            check commit;
         }
-        sql:ExecutionResult _ = check dbClient->execute(`DELETE FROM AID_PACKAGE_ITEM WHERE PACKAGEID=${AidPackageID}`);
-        sql:ExecutionResult _ = check dbClient->execute(`DELETE FROM AID_PACKAGE WHERE PACKAGEID=${AidPackageID}`);
+        return;
     }
 }
 
