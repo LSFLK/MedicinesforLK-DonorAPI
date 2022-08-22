@@ -33,7 +33,7 @@ service /donor on new http:Listener(9090) {
         string status = "Draft";
         DonorAidPackage[] donorAidPackages = [];
         stream<DonorAidPackage, error?> resultStream = dbClient->query(`SELECT AID_PACKAGE.PACKAGEID, NAME, DESCRIPTION, 
-                                                                    AID_PACKAGE.STATUS, PLEDGE.AMOUNT 
+                                                                    AID_PACKAGE.STATUS, AID_PACKAGE.CREATEDBY as 'createdBy', PLEDGE.AMOUNT 
                                                                     FROM AID_PACKAGE INNER JOIN PLEDGE 
                                                                         ON AID_PACKAGE.PACKAGEID = PLEDGE.PACKAGEID 
                                                                     WHERE AID_PACKAGE.STATUS!=${status} AND DONORID=${donorID}`);

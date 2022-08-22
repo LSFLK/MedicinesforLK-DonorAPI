@@ -59,6 +59,7 @@ type AidPackage record {
     decimal goalAmount?;
     decimal receivedAmount?;
     AidPackageItem[] aidPackageItems = [];
+    string createdBy?;
 };
 
 type AidPackageItem record {
