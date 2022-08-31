@@ -13,7 +13,7 @@ service /donor on new http:Listener(9090) {
     resource function get aidpackages() returns AidPackage[]|error {
         string status = "Draft";
         AidPackage[] aidPackages = [];
-        stream<AidPackage, error?> resultStream = dbClient->query(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS 
+        stream<AidPackage, error?> resultStream = dbClient->query(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, CREATEDBY as 'createdBy' 
                                                                        FROM AID_PACKAGE
                                                                        WHERE STATUS!=${status};`);
         check from AidPackage aidPackage in resultStream
@@ -52,7 +52,7 @@ service /donor on new http:Listener(9090) {
     # + return - An aidPackage
     resource function get [string donorID]/aidpackages/[int AidPackageID]() returns AidPackage?|error {
         string status = "Draft";
-        AidPackage aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS FROM AID_PACKAGE  
+        AidPackage aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, CREATEDBY as 'createdBy' FROM AID_PACKAGE  
                                                WHERE PACKAGEID=${AidPackageID} AND STATUS!=${status};`);
         check constructAidPackageData(aidPackage);
         return aidPackage;
