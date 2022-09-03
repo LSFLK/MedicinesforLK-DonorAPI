@@ -36,7 +36,7 @@ service /donor on new http:Listener(9090) {
                                                                     AID_PACKAGE.STATUS, AID_PACKAGE.CREATEDBY as 'createdBy', PLEDGE.AMOUNT 
                                                                     FROM AID_PACKAGE INNER JOIN PLEDGE 
                                                                         ON AID_PACKAGE.PACKAGEID = PLEDGE.PACKAGEID 
-                                                                    WHERE AID_PACKAGE.STATUS!=${status} AND DONORID=${donorID}`);
+                                                                    WHERE AID_PACKAGE.STATUS!=${status} AND AID_PACKAGE.DONORID=${donorID}`);
         check from DonorAidPackage donorAidPackage in resultStream
             do {
                 donorAidPackages.push(donorAidPackage);
