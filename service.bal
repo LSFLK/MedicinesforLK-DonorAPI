@@ -13,7 +13,7 @@ service /donor on new http:Listener(9090) {
     resource function get aidpackages() returns AidPackage[]|error {
         string status = "Draft";
         AidPackage[] aidPackages = [];
-        stream<AidPackage, error?> resultStream = dbClient->query(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS 
+        stream<AidPackage, error?> resultStream = dbClient->query(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, CREATEDBY as 'createdBy' 
                                                                        FROM AID_PACKAGE
                                                                        WHERE STATUS!=${status};`);
         check from AidPackage aidPackage in resultStream
@@ -33,7 +33,7 @@ service /donor on new http:Listener(9090) {
         string status = "Draft";
         DonorAidPackage[] donorAidPackages = [];
         stream<DonorAidPackage, error?> resultStream = dbClient->query(`SELECT AID_PACKAGE.PACKAGEID, NAME, DESCRIPTION, 
-                                                                    AID_PACKAGE.STATUS, PLEDGE.AMOUNT 
+                                                                    AID_PACKAGE.STATUS, AID_PACKAGE.CREATEDBY as 'createdBy', PLEDGE.AMOUNT 
                                                                     FROM AID_PACKAGE INNER JOIN PLEDGE 
                                                                         ON AID_PACKAGE.PACKAGEID = PLEDGE.PACKAGEID 
                                                                     WHERE AID_PACKAGE.STATUS!=${status} AND DONORID=${donorID}`);
@@ -52,7 +52,7 @@ service /donor on new http:Listener(9090) {
     # + return - An aidPackage
     resource function get [string donorID]/aidpackages/[int AidPackageID]() returns AidPackage?|error {
         string status = "Draft";
-        AidPackage aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS FROM AID_PACKAGE  
+        AidPackage aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, CREATEDBY as 'createdBy' FROM AID_PACKAGE  
                                                WHERE PACKAGEID=${AidPackageID} AND STATUS!=${status};`);
         check constructAidPackageData(aidPackage);
         return aidPackage;
