@@ -15,7 +15,7 @@ service /donor on new http:Listener(9090) {
         AidPackage[] aidPackages = [];
         stream<AidPackage, error?> resultStream = dbClient->query(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, CREATEDBY as 'createdBy' 
                                                                        FROM AID_PACKAGE
-                                                                       WHERE STATUS!=${status};`);
+                                                                       WHERE STATUS!=${status} ORDER BY DATETIME DESC;`);
         check from AidPackage aidPackage in resultStream
             do {
                 aidPackages.push(aidPackage);
@@ -36,7 +36,8 @@ service /donor on new http:Listener(9090) {
                                                                     AID_PACKAGE.STATUS, AID_PACKAGE.CREATEDBY as 'createdBy', PLEDGE.AMOUNT 
                                                                     FROM AID_PACKAGE INNER JOIN PLEDGE 
                                                                         ON AID_PACKAGE.PACKAGEID = PLEDGE.PACKAGEID 
-                                                                    WHERE AID_PACKAGE.STATUS!=${status} AND AID_PACKAGE.DONORID=${donorID}`);
+                                                                    WHERE AID_PACKAGE.STATUS!=${status} AND AID_PACKAGE.DONORID=${donorID} 
+                                                                    ORDER BY AID_PACKAGE.DATETIME DESC`);
         check from DonorAidPackage donorAidPackage in resultStream
             do {
                 donorAidPackages.push(donorAidPackage);
