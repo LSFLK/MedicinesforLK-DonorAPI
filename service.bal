@@ -104,7 +104,7 @@ service /donor on new http:Listener(9090) {
     resource function get aidpackages/[int AidPackageID]/updatecomments() returns AidPackageUpdate[]|error {
         AidPackageUpdate[] aidPackageUpdates = [];
 
-        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGEUPDATEID, UPDATECOMMENT,DATE_FORMAT(DATETIME, '%Y-%m-%d %T') FROM AID_PACKAGE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
+        stream<AidPackageUpdate, error?> resultStream = dbClient->query(`SELECT PACKAGEID, PACKAGEUPDATEID, UPDATECOMMENT,DATE_FORMAT(DATETIME, '%Y-%m-%d %T') as DATETIME FROM AID_PACKAGE_UPDATE WHERE PACKAGEID=${AidPackageID};`);
         check from AidPackageUpdate aidPackageUpdate in resultStream
             do {
                 aidPackageUpdates.push(aidPackageUpdate);
