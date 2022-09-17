@@ -84,7 +84,7 @@ type AidPackageUpdate record {
     int packageUpdateId = -1;
     int packageID;
     string updateComment;
-    string dateTime;
+    int? dateTime;
 };
 
 //Return types
