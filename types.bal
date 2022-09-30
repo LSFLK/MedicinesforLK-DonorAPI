@@ -27,14 +27,13 @@ type MedicalItem record {
 };
 
 type MedicalNeed record {
-    int needID = -1;
-    int itemID;
-    int beneficiaryID;
+    int needID;
+    MedicalItem item;
     time:Date period;
     string urgency;
     int neededQuantity;
     int remainingQuantity;
-    Beneficiary? beneficiary = ();
+    Beneficiary beneficiary;
 };
 
 type Quotation record {
