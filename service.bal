@@ -1,6 +1,7 @@
 import ballerina/http;
 import ballerina/sql;
 import ballerinax/mysql;
+import ballerina/time;
 
 final mysql:Client dbClient = check new (dbHost, dbUser, dbPass, db, dbPort);
 
@@ -113,6 +114,47 @@ service /donor on new http:Listener(9090) {
         check resultStream.close();
         return aidPackageUpdates;
     }
+
+    # A resource for fetching all medical needs
+    # + return - list of medical needs
+    resource function get medicalNeeds() returns MedicalNeed[]|error? {
+        stream<record {time:Date period;}, error?> results = dbClient->query(
+            `SELECT 
+                MEDICAL_ITEM.ITEMID, MEDICAL_ITEM.NAME as 'itemName', MEDICAL_ITEM.TYPE, MEDICAL_ITEM.UNIT, 
+                MEDICAL_NEED.NEEDID, MEDICAL_NEED.PERIOD, MEDICAL_NEED.NEEDEDQUANTITY, MEDICAL_NEED.REMAININGQUANTITY, MEDICAL_NEED.URGENCY, 
+                BENEFICIARY.BENEFICIARYID, BENEFICIARY.NAME as 'beneficiaryName', BENEFICIARY.SHORTNAME, BENEFICIARY.EMAIL, BENEFICIARY.PHONENUMBER
+            FROM MEDICAL_NEED 
+            JOIN MEDICAL_ITEM ON MEDICAL_NEED.ITEMID = MEDICAL_ITEM.ITEMID
+            JOIN BENEFICIARY ON MEDICAL_NEED.BENEFICIARYID = BENEFICIARY.BENEFICIARYID`
+        );
+        MedicalNeed[] medicalNeeds = [];
+        check from record {time:Date period;} result in results
+            do {
+                MedicalNeed medicalNeed = {
+                    needID: check result["NEEDID"].ensureType(),
+                    period: result.period,
+                    neededQuantity: check result["NEEDEDQUANTITY"].ensureType(),
+                    remainingQuantity: check result["REMAININGQUANTITY"].ensureType(),
+                    urgency: check result["URGENCY"].ensureType(),
+                    item: {
+                        itemID: check result["ITEMID"].ensureType(),
+                        name: check result["itemName"].ensureType(),
+                        'type: check result["TYPE"].ensureType(),
+                        unit: check result["UNIT"].ensureType()
+                    },
+                    beneficiary: {
+                        beneficiaryID: check result["BENEFICIARYID"].ensureType(),
+                        name: check result["beneficiaryName"].ensureType(),
+                        shortName: check result["SHORTNAME"].ensureType(),
+                        email: check result["EMAIL"].ensureType(),
+                        phoneNumber: check result["PHONENUMBER"].ensureType()
+                    }
+                };
+                medicalNeeds.push(medicalNeed);
+            };
+        check results.close();
+        return medicalNeeds;
+    }
 }
 
 function constructAidPackageData(AidPackage|DonorAidPackage aidPackage) returns error? {
@@ -150,7 +192,7 @@ function constructAidPackageData(AidPackage|DonorAidPackage aidPackage) returns 
 }
 
 function getPledge(int pledgeId) returns Pledge|error {
-    Pledge pledge = check dbClient->queryRow(`SELECT PLEDGEID, PACKAGEID, DONORID, AMOUNT, STATUS                                                                      FROM PLEDGE WHERE PLEDGEID=${pledgeId};`);
+    Pledge pledge = check dbClient->queryRow(`SELECT PLEDGEID, PACKAGEID, DONORID, AMOUNT, STATUS FROM PLEDGE WHERE PLEDGEID=${pledgeId};`);
     return pledge;
 }
 
