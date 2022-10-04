@@ -60,6 +60,7 @@ type AidPackage record {
     decimal receivedAmount?;
     AidPackageItem[] aidPackageItems = [];
     string createdBy;
+    string? thumbnail = ();
 };
 
 type AidPackageItem record {

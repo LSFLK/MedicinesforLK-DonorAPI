@@ -13,7 +13,7 @@ service /donor on new http:Listener(9090) {
     resource function get aidpackages() returns AidPackage[]|error {
         string status = "Draft";
         AidPackage[] aidPackages = [];
-        stream<AidPackage, error?> resultStream = dbClient->query(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, CREATEDBY as 'createdBy' 
+        stream<AidPackage, error?> resultStream = dbClient->query(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, CREATEDBY as 'createdBy', THUMBNAIL
                                                                        FROM AID_PACKAGE
                                                                        WHERE STATUS!=${status};`);
         check from AidPackage aidPackage in resultStream
