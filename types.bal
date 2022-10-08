@@ -26,6 +26,11 @@ type MedicalItem record {
     string unit;
 };
 
+type MedicalNeedResponse record {|
+    int lastUpdatedTime;
+    MedicalNeed[] medicalNeeds;
+|};
+
 type MedicalNeed record {
     int needID;
     MedicalItem item;
