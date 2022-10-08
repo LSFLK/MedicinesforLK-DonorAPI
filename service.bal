@@ -117,7 +117,7 @@ service /donor on new http:Listener(9090) {
 
     # A resource for fetching all medical needs
     # + return - list of medical needs
-    resource function get medicalNeeds() returns MedicalNeed[]|error? {
+    resource function get medical\-needs() returns MedicalNeedResponse|error? {
         stream<record {time:Date period;}, error?> results = dbClient->query(
             `SELECT 
                 MEDICAL_ITEM.ITEMID, MEDICAL_ITEM.NAME as 'itemName', MEDICAL_ITEM.TYPE, MEDICAL_ITEM.UNIT, 
@@ -153,7 +153,15 @@ service /donor on new http:Listener(9090) {
                 medicalNeeds.push(medicalNeed);
             };
         check results.close();
-        return medicalNeeds;
+        record {
+            int dateTime;
+            int lastUpdatedTime;
+        } lastUpdatedTimeInfo = check dbClient->queryRow(`SELECT DATETIME, LAST_UPDATED_TIME as 'lastUpdatedTime' 
+            FROM MEDICAL_NEED_UPDATE ORDER BY DATETIME DESC LIMIT 1`);
+        return {
+            lastUpdatedTime: lastUpdatedTimeInfo.lastUpdatedTime,
+            medicalNeeds: medicalNeeds
+        };
     }
 }
 
