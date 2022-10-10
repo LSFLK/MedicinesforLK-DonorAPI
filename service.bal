@@ -156,10 +156,11 @@ service /donor on new http:Listener(9090) {
         record {
             int dateTime;
             int lastUpdatedTime;
-        } lastUpdatedTimeInfo = check dbClient->queryRow(`SELECT DATETIME, LAST_UPDATED_TIME as 'lastUpdatedTime' 
+        }|error lastUpdatedTimeInfo = dbClient->queryRow(`SELECT DATETIME, LAST_UPDATED_TIME as 'lastUpdatedTime' 
             FROM MEDICAL_NEED_UPDATE ORDER BY DATETIME DESC LIMIT 1`);
+        int lastUpdatedTime = lastUpdatedTimeInfo is error ? time:utcNow()[0]: lastUpdatedTimeInfo.lastUpdatedTime;
         return {
-            lastUpdatedTime: lastUpdatedTimeInfo.lastUpdatedTime,
+            lastUpdatedTime: lastUpdatedTime,
             medicalNeeds: medicalNeeds
         };
     }
