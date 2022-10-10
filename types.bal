@@ -27,7 +27,7 @@ type MedicalItem record {
 };
 
 type MedicalNeedResponse record {|
-    int lastUpdatedTime;
+    int lastUpdatedTime?;
     MedicalNeed[] medicalNeeds;
 |};
 

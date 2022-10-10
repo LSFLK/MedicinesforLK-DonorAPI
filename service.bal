@@ -153,15 +153,18 @@ service /donor on new http:Listener(9090) {
                 medicalNeeds.push(medicalNeed);
             };
         check results.close();
+        MedicalNeedResponse response = {
+            medicalNeeds: medicalNeeds
+        };
         record {
             int dateTime;
             int lastUpdatedTime;
-        } lastUpdatedTimeInfo = check dbClient->queryRow(`SELECT DATETIME, LAST_UPDATED_TIME as 'lastUpdatedTime' 
+        }|error lastUpdatedTimeInfo = dbClient->queryRow(`SELECT DATETIME, LAST_UPDATED_TIME as 'lastUpdatedTime' 
             FROM MEDICAL_NEED_UPDATE ORDER BY DATETIME DESC LIMIT 1`);
-        return {
-            lastUpdatedTime: lastUpdatedTimeInfo.lastUpdatedTime,
-            medicalNeeds: medicalNeeds
-        };
+        if lastUpdatedTimeInfo !is error {
+            response.lastUpdatedTime = lastUpdatedTimeInfo.lastUpdatedTime;
+        }
+        return response;
     }
 }
 
