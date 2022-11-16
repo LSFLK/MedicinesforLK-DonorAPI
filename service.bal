@@ -28,6 +28,14 @@ service /donor on new http:Listener(9090) {
         return aidPackages;
     }
 
+    # A resource for fetching an Aid-Package
+    # + return - An Aid-Package
+    resource function get aidpackages/[int packageId]() returns AidPackage|error {
+        AidPackage aidPackage = check getAidPackage(packageId);
+        check constructAidPackageData(aidPackage);
+        return aidPackage;
+    }
+
     # A resource for reading donor pledged aidPackages
     # + return - List of aidPackages 
     resource function get [string donorID]/aidpackages() returns DonorAidPackage[]|error {
@@ -204,3 +212,9 @@ function getPledge(int pledgeId) returns Pledge|error {
     return pledge;
 }
 
+function getAidPackage(int packageId) returns AidPackage|error {
+    AidPackage aidPackage = check dbClient->queryRow(`SELECT PACKAGEID, NAME, DESCRIPTION, STATUS, UNIX_TIMESTAMP(DATETIME) as 'dateTime', DONORID,
+                                                          THUMBNAIL, BANNER, CREATEDBY as 'createdBy' FROM AID_PACKAGE
+                                                          WHERE PACKAGEID=${packageId};`);
+    return aidPackage;
+}
